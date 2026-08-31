@@ -2,7 +2,14 @@
 
 import { useEffect, useState } from 'react';
 import { useParams } from 'next/navigation';
+import dynamic from 'next/dynamic';
 import { useSocket } from '@/hooks/useSocket';
+import '@excalidraw/excalidraw/index.css';
+
+const Excalidraw = dynamic(
+  async () => (await import('@excalidraw/excalidraw')).Excalidraw,
+  { ssr: false }
+);
 
 interface Participant {
   socketId: string;
@@ -34,14 +41,13 @@ export default function RoomPage() {
     setHasJoined(true);
   };
 
-  return (
-    <div className="p-8">
-      <h1 className="text-2xl font-bold mb-4">Room: {roomId}</h1>
-      <p className="mb-4">
-        Status: {isConnected ? ' Connected' : ' Disconnected'}
-      </p>
-
-      {!hasJoined ? (
+  if (!hasJoined) {
+    return (
+      <div className="p-8">
+        <h1 className="text-2xl font-bold mb-4">Room: {roomId}</h1>
+        <p className="mb-4">
+          Status: {isConnected ? ' Connected' : ' Disconnected'}
+        </p>
         <div className="flex gap-2">
           <input
             type="text"
@@ -57,18 +63,16 @@ export default function RoomPage() {
             Join Room
           </button>
         </div>
-      ) : (
-        <div>
-          <h2 className="font-semibold mb-2">Participants ({participants.length}):</h2>
-          <ul>
-            {participants.map((p) => (
-              <li key={p.socketId}>
-                {p.username} {p.socketId === socket?.id && '(you)'}
-              </li>
-            ))}
-          </ul>
-        </div>
-      )}
+      </div>
+    );
+  }
+
+  return (
+    <div style={{ height: '100vh', width: '100vw' }}>
+      <div className="absolute top-2 left-2 z-10 bg-white/90 px-3 py-1 rounded shadow text-sm">
+        {participants.length} online: {participants.map((p) => p.username).join(', ')}
+      </div>
+      <Excalidraw />
     </div>
   );
 }

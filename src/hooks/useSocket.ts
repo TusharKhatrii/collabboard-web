@@ -10,6 +10,7 @@ export function useSocket() {
   useEffect(() => {
     const socket = io(process.env.NEXT_PUBLIC_WS_URL!);
     socketRef.current = socket;
+console.log('WS URL:', process.env.NEXT_PUBLIC_WS_URL);
 
     socket.on('connect', () => {
       console.log('Connected:', socket.id);
