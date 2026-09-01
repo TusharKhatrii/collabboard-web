@@ -1,0 +1,10 @@
+node_modules
+.next
+.git
+.gitignore
+*.md
+Dockerfile
+.dockerignore
+.env*
+next-env.d.ts
+tsconfig.tsbuildinfo
