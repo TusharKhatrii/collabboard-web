@@ -1,36 +1,83 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# CollabBoard
+
+A real-time collaborative whiteboard — sketch, plan, and think out loud together, live, with no setup. Built on [Excalidraw](https://github.com/excalidraw/excalidraw), with a custom Socket.io backend for presence, drawing sync, and live cursors.
+
+**Live app:** `LIVE_LINK_PLACEHOLDER`
+
+## Tech Stack
+
+- **Next.js 14** (App Router) + TypeScript
+- **Tailwind CSS**
+- **Excalidraw** — canvas/whiteboard UI
+- **Socket.io Client** — real-time communication
+- **Docker** — containerized local builds
+
+## Features
+
+- Create a room and get a shareable invite link instantly
+- Join a room via a shared access code
+- Live collaborative drawing — every stroke syncs in real time, with conflict-safe merging so simultaneous edits never overwrite each other
+- Live presence — see who else is in the room
+- Named, colored collaborator cursors, Google Docs–style
+- Light/dark theme toggle
 
 ## Getting Started
 
-First, run the development server:
+### Prerequisites
+
+- Node.js 20+
+- pnpm
+- The [collabboard-api](https://github.com/YOUR-USERNAME/collabboard-api) backend running (locally or deployed)
+
+### Local Setup
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+pnpm install
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Create a `.env.local` file in the project root:
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```env
+NEXT_PUBLIC_API_URL=http://localhost:3001
+NEXT_PUBLIC_WS_URL=http://localhost:3001
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Run the dev server:
 
-## Learn More
+```bash
+pnpm dev
+```
 
-To learn more about Next.js, take a look at the following resources:
+Open `http://localhost:3000`.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Running with Docker
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+Build the image (env values are baked in at build time, not runtime):
 
-## Deploy on Vercel
+```bash
+docker build \
+  --build-arg NEXT_PUBLIC_WS_URL=http://localhost:3001 \
+  --build-arg NEXT_PUBLIC_API_URL=http://localhost:3001 \
+  -t collabboard-web .
+```
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+Run the container:
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+```bash
+docker run -p 3000:3000 collabboard-web
+```
+
+## Deployment
+
+Deployed on [Vercel](https://vercel.com), auto-deploying from the `main` branch.
+
+Required environment variables on Vercel:
+
+```
+NEXT_PUBLIC_API_URL=<deployed backend URL>
+NEXT_PUBLIC_WS_URL=<deployed backend URL>
+```
+
+## Related
+
+- Backend repo: [collabboard-api](https://github.com/YOUR-USERNAME/collabboard-api)

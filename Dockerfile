@@ -5,8 +5,8 @@ WORKDIR /app
 
 # ---- Dependencies ----
 FROM base AS dependencies
-COPY pnpm-lock.yaml ./
-RUN pnpm fetch
+COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
+RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --frozen-lockfile
 
 # ---- Build ----
 FROM base AS build
@@ -18,8 +18,6 @@ ENV NEXT_TELEMETRY_DISABLED=1
 
 COPY --from=dependencies /app/node_modules ./node_modules
 COPY . .
-RUN mkdir -p public
-RUN pnpm install --frozen-lockfile
 RUN pnpm run build
 
 # ---- Production ----
@@ -32,9 +30,11 @@ ENV HOSTNAME=0.0.0.0
 
 RUN addgroup -g 1001 -S nodejs && adduser -S nextjs -u 1001
 
+# Static assets (public + generated)
 COPY --from=build --chown=nextjs:nodejs /app/public ./public
-COPY --from=build --chown=nextjs:nodejs /app/.next/standalone ./
 COPY --from=build --chown=nextjs:nodejs /app/.next/static ./.next/static
+# Standalone server (bundles most node_modules; production deps only)
+COPY --from=build --chown=nextjs:nodejs /app/.next/standalone ./
 
 USER nextjs
 EXPOSE 3000
