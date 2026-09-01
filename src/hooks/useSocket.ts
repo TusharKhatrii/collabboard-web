@@ -1,31 +1,32 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { io, Socket } from 'socket.io-client';
 
 export function useSocket() {
-  const socketRef = useRef<Socket | null>(null);
+  const [socket, setSocket] = useState<Socket | null>(null);
   const [isConnected, setIsConnected] = useState(false);
 
   useEffect(() => {
     const socket = io(process.env.NEXT_PUBLIC_WS_URL!);
-    socketRef.current = socket;
-console.log('WS URL:', process.env.NEXT_PUBLIC_WS_URL);
+    let mounted = true;
 
     socket.on('connect', () => {
-      console.log('Connected:', socket.id);
+      if (!mounted) return;
+      setSocket(socket);
       setIsConnected(true);
     });
 
     socket.on('disconnect', () => {
-      console.log('Disconnected');
+      if (!mounted) return;
       setIsConnected(false);
     });
 
     return () => {
+      mounted = false;
       socket.disconnect();
     };
   }, []);
 
-  return { socket: socketRef.current, isConnected };
+  return { socket, isConnected };
 }

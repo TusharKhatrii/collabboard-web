@@ -2,20 +2,24 @@
 
 import { useEffect, useState } from 'react';
 
+type Theme = 'dark' | 'light';
+
+function getInitialTheme(): Theme {
+  if (typeof window === 'undefined') return 'dark';
+  const stored = localStorage.getItem('theme') as Theme | null;
+  return stored === 'light' ? 'light' : 'dark';
+}
+
 export function useTheme() {
-  const [theme, setTheme] = useState<'dark' | 'light'>('dark');
+  const [theme, setTheme] = useState<Theme>(getInitialTheme);
 
   useEffect(() => {
-    const stored = localStorage.getItem('theme') as 'dark' | 'light' | null;
-    const initial = stored || 'dark';
-    setTheme(initial);
-    document.documentElement.dataset.theme = initial;
-  }, []);
+    document.documentElement.dataset.theme = theme;
+  }, [theme]);
 
   const toggleTheme = () => {
-    const next = theme === 'dark' ? 'light' : 'dark';
+    const next: Theme = theme === 'dark' ? 'light' : 'dark';
     setTheme(next);
-    document.documentElement.dataset.theme = next;
     localStorage.setItem('theme', next);
   };
 

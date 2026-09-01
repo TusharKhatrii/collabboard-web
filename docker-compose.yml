@@ -1,0 +1,35 @@
+# CollabBoard stack
+# Build the web app with the API URL baked in, then run both services.
+#
+#   docker compose up --build
+#
+# To target a hosted API (instead of localhost:3001), create a `.env` file next
+# to this docker-compose.yml with:
+#
+#   NEXT_PUBLIC_API_URL=https://api.yourdomain.com
+#   NEXT_PUBLIC_WS_URL=https://api.yourdomain.com
+
+services:
+  api:
+    build:
+      context: ../collabboard-api
+    env_file:
+      - ../collabboard-api/.env
+    environment:
+      NODE_ENV: production
+      PORT: 3001
+    ports:
+      - "3001:3001"
+    restart: unless-stopped
+
+  web:
+    build:
+      context: .
+      args:
+        NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL:-http://localhost:3001}
+        NEXT_PUBLIC_WS_URL: ${NEXT_PUBLIC_WS_URL:-http://localhost:3001}
+    ports:
+      - "3000:3000"
+    depends_on:
+      - api
+    restart: unless-stopped
