@@ -84,7 +84,9 @@ export default function RoomPage() {
         if (res.ok) {
           const room = await res.json();
           setRoomName(room.name || normalizedRoomId);
-          if (Array.isArray(room.elements)) setSavedScene(room.elements);
+          if (Array.isArray(room.elements)) {
+            setSavedScene(room.elements);
+          }
         } else {
           setRoomName(roomId);
         }
@@ -213,24 +215,19 @@ export default function RoomPage() {
     };
   }, [socket]);
 
-  // Apply the persisted scene once Excalidraw is mounted and the DB scene loaded
+  // Excalidraw mounts seeded with the DB scene via `initialData`. Hold the
+  // change guard for a short window after mount so the initial render (which
+  // emits the seeded scene) isn't echoed into the room or treated as a user edit.
   useEffect(() => {
     if (!excalidrawReady || !sceneReady || restoreStartedRef.current) return;
-    const api = excalidrawAPIRef.current;
-    if (!api) return;
 
     restoreStartedRef.current = true;
 
-    if (savedScene.length > 0) {
-      isApplyingRemoteUpdate.current = true;
-      api.updateScene({ elements: savedScene, captureUpdate: 'NEVER' });
-    }
-
-    // release the freeze once any change notifications from updateScene flush
+    // release the freeze once any change notifications from the seeded mount flush
     window.setTimeout(() => {
       isApplyingRemoteUpdate.current = false;
     }, 100);
-  }, [excalidrawReady, sceneReady, savedScene]);
+  }, [excalidrawReady, sceneReady]);
 
   const handleExcalidrawChange = (elements: readonly SceneElement[]) => {
     if (isApplyingRemoteUpdate.current) return;
@@ -539,16 +536,22 @@ export default function RoomPage() {
       </div>
 
       <div className="flex-1 min-h-0">
-        <Excalidraw
-          key={theme}
-          excalidrawAPI={(api) => {
-            excalidrawAPIRef.current = api;
-            setExcalidrawReady(true);
-          }}
-          onChange={handleExcalidrawChange}
-          onPointerUpdate={handlePointerUpdate}
-          theme={theme}
-        />
+        {roomLoading ? (
+          <div className="h-full flex items-center justify-center text-sm text-[var(--text-muted)]">
+            Loading board…
+          </div>
+        ) : (
+          <Excalidraw
+            initialData={{ elements: savedScene }}
+            excalidrawAPI={(api) => {
+              excalidrawAPIRef.current = api;
+              setExcalidrawReady(true);
+            }}
+            onChange={handleExcalidrawChange}
+            onPointerUpdate={handlePointerUpdate}
+            theme={theme}
+          />
+        )}
       </div>
     </div>
   );
