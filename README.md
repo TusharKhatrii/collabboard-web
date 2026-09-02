@@ -2,7 +2,7 @@
 
 A real-time collaborative whiteboard — sketch, plan, and think out loud together, live, with no setup. Built on [Excalidraw](https://github.com/excalidraw/excalidraw), with a custom Socket.io backend for presence, drawing sync, and live cursors.
 
-**Live app:** `https://collabboard-web-seven.vercel.app/`
+[Live app](https://collabboard-web-seven.vercel.app/)
 
 ## Tech Stack
 
