@@ -2,7 +2,7 @@
 
 A real-time collaborative whiteboard — sketch, plan, and think out loud together, live, with no setup. Built on [Excalidraw](https://github.com/excalidraw/excalidraw), with a custom Socket.io backend for presence, drawing sync, and live cursors.
 
-**Live app:** `LIVE_LINK_PLACEHOLDER`
+**Live app:** `https://collabboard-web-seven.vercel.app/`
 
 ## Tech Stack
 
@@ -27,7 +27,7 @@ A real-time collaborative whiteboard — sketch, plan, and think out loud togeth
 
 - Node.js 20+
 - pnpm
-- The [collabboard-api](https://github.com/YOUR-USERNAME/collabboard-api) backend running (locally or deployed)
+- The [collabboard-api](https://github.com/TusharKhatrii/collabboard-api) backend running (locally or deployed)
 
 ### Local Setup
 
@@ -80,4 +80,4 @@ NEXT_PUBLIC_WS_URL=<deployed backend URL>
 
 ## Related
 
-- Backend repo: [collabboard-api](https://github.com/YOUR-USERNAME/collabboard-api)
+- Backend repo: [collabboard-api](https://github.com/TusharKhatrii/collabboard-api)
